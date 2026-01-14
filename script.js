@@ -1,4 +1,4 @@
-const API_URL = "https://YOUR-RENDER-APP.onrender.com/ask";
+const API_URL = "https://policy-chatbot-frontend.onrender.com/ask";
 
 async function ask() {
   const input = document.getElementById("question");
