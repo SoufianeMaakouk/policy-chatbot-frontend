@@ -1,21 +1,37 @@
-const API_URL = "https://policy-chatbot-frontend.onrender.com/ask";
+const BACKEND_URL = "https://policy-chatbot-backend.onrender.com";
 
-async function ask() {
-  const input = document.getElementById("question");
-  const chat = document.getElementById("chat");
-  const question = input.value.trim();
+async function askQuestion() {
+  const question = document.getElementById("question").value;
+  const answerDiv = document.getElementById("answer");
 
-  if (!question) return;
+  if (!question.trim()) {
+    answerDiv.innerText = "Please enter a question.";
+    return;
+  }
 
-  chat.innerHTML += `<div class="user">You:</div><div>${question}</div>`;
-  input.value = "";
+  answerDiv.innerText = "Thinking...";
 
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question })
-  });
+  try {
+    const response = await fetch(`${BACKEND_URL}/ask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ question })
+    });
 
-  const data = await res.json();
-  chat.innerHTML += `<div class="bot"><b>Assistant:</b> ${data.answer}</div>`;
+    const data = await response.json();
+
+    if (data.answer) {
+      answerDiv.innerText = data.answer;
+    } else if (data.error) {
+      answerDiv.innerText = data.error;
+    } else {
+      answerDiv.innerText = "No answer returned.";
+    }
+
+  } catch (err) {
+    console.error(err);
+    answerDiv.innerText = "Error connecting to backend.";
+  }
 }
